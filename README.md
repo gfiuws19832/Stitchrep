@@ -1,65 +1,77 @@
-# stitch
+"""Console banner, boot sequence, and startup animation."""
+import os
+import sys
+import time
 
-A modular web analysis framework for authorized security testing.
+RED = "\33[91m"
+PURPLE = "\033[0;35m"
+GREEN = "\033[32m"
+YELLOW = "\033[93m"
+CYAN = "\033[36m"
+RESET = "\033[0m"
+BOLD = "\033[1m"
 
-`stitch` crawls a target within a defined scope, maps its attack surface, and probes for common web vulnerabilities. It also bundles reconnaissance helpers: security header audit, technology fingerprinting, common port scan, and TLS certificate inspection.
+_BANNER_LINES = [
+    (RED,    "   ███████╗████████╗██╗████████╗ ██████╗██╗  ██╗"),
+    (PURPLE, "   ██╔════╝╚══██╔══╝██║╚══██╔══╝██╔════╝██║  ██║"),
+    (RED,    "   ███████╗   ██║   ██║   ██║   ██║     ███████║"),
+    (PURPLE, "   ╚════██║   ██║   ██║   ██║   ██║     ██╔══██║"),
+    (RED,    "   ███████║   ██║   ██║   ██║   ╚██████╗██║  ██║"),
+    (PURPLE, "   ╚══════╝   ╚═╝   ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝"),
+]
 
-![python](https://img.shields.io/badge/python-3.11%2B-blue)
-![license](https://img.shields.io/badge/license-MIT-green)
 
----
+def clear() -> None:
+    os.system("cls" if os.name == "nt" else "clear")
 
-## ⚠️ Authorized use only
 
-`stitch` is a security testing tool. Use it **only** against systems you own or have **explicit written permission** to test. Unauthorized scanning and exploitation is illegal in most jurisdictions (Computer Fraud and Abuse Act in the US, Computer Misuse Act in the UK, and equivalents worldwide).
+def banner_text() -> str:
+    return "\n".join(f"{c}{line}{RESET}" for c, line in _BANNER_LINES)
 
-The maintainers assume **no liability** for misuse. If you are unsure whether you have permission, you do not have permission.
 
-Recommended legal practice:
-- Get written authorization that names the target, the scope, and the time window.
-- Test against your own lab first: [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/), [DVWA](https://github.com/digininja/DVWA), [PortSwigger Web Security Academy](https://portswigger.net/web-security).
-- Report findings responsibly.
+def boot_sequence() -> None:
+    clear()
+    lines = [
+        (PURPLE, "[BOOT] initializing core..."),
+        (PURPLE, "[BOOT] loading modules"),
+        (PURPLE, "[BOOT] arming payloads"),
+        (PURPLE, "[BOOT] scope guard online"),
+        (RED,    "[OK]   all systems nominal"),
+    ]
+    for color, line in lines:
+        sys.stdout.write(color)
+        for ch in line:
+            sys.stdout.write(ch)
+            sys.stdout.flush()
+            time.sleep(0.010)
+        sys.stdout.write(RESET)
+        print()
+        time.sleep(0.15)
+    time.sleep(0.35)
 
----
 
-## Features
+def draw_banner() -> None:
+    clear()
+    for color, line in _BANNER_LINES:
+        sys.stdout.write(color + line + RESET + "\n")
+        sys.stdout.flush()
+        time.sleep(0.08)
 
-**Scanner**
-- Scoped crawler (host + subdomains), form and parameter extraction
-- SQL injection: error-based and boolean differential
-- Reflected XSS
-- Local file inclusion (LFI)
-- Server-side template injection (SSTI) — polyglot probes
-- XML external entity (XXE) on POST forms
-- Open redirect
-- SSRF (opt-in, requires external responder)
-- Command injection (timing differential, non-destructive)
 
-**Reconnaissance**
-- Security header audit (HSTS, CSP, X-Frame-Options, etc.)
-- Technology fingerprinting (WordPress, Laravel, Django, nginx, React, jQuery, ...)
-- Common port scan (TCP connect, 17 services)
-- TLS certificate inspection (subject, issuer, expiry)
+def pulse(times: int = 2) -> None:
+    for _ in range(times):
+        for c in (RED, PURPLE):
+            clear()
+            print(banner_text())
+            print(f"\n{BOLD}{c}        s t i t c h {RESET}")
+            time.sleep(0.25)
 
-**Interface**
-- Interactive menu (numbered options)
-- Flag-based CLI for scripting
-- Terminal banner + boot animation
-- Optional Tkinter intro animation
-- Session auth (cookie + custom header) shared across menu actions
-- JSON report output
 
----
-
-## Installation
-
-```bash
-git clone https://github.com/<you>/stitch.git
-cd stitch
-python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
+def boot_banner() -> None:
+    boot_sequence()
+    draw_banner()
+    time.sleep(0.4)
+    pulse(times=2)
+    clear()
+    print(banner_text())
+    print(f"\n{BOLD}{RED}        s t i t c h {RESET}\n")
